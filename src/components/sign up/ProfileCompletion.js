@@ -3,22 +3,56 @@ import React, { useState, useEffect } from 'react';
 const ProfileCompletion = () => {
     const [fullName, setFullName] = useState('');
     const [photoUrl, setPhotoUrl] = useState('');
-    const [currentUser, setCurrentUser] = useState(null); // State to hold current user data
+    const [currentUser, setCurrentUser] = useState(null); 
 
     useEffect(() => {
-        // Retrieve current user from localStorage on component mount
-        const storedUser = JSON.parse(localStorage.getItem('currentUser'));
-        setCurrentUser(storedUser);
-    }, []);
+        
+        const fetchUserProfile = async () => {
+            try {
+                const token = localStorage.getItem('firebaseAuthToken');
+
+                if (!token) {
+                    console.error('No user logged in.');
+                    return;
+                }
+
+                const userResponse = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyDiAUHJpFYnvmGAFZidGl8jkts7fj57xiI`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        idToken: token,
+                    }),
+                });
+
+                if (!userResponse.ok) {
+                    console.error('Failed to fetch user data:', userResponse.statusText);
+                    return;
+                }
+
+                const userData = await userResponse.json();
+                setCurrentUser(userData.users[0]); // Assuming there's only one user
+
+                // Pre-fill form fields with user data
+                setFullName(userData.users[0]?.displayName || '');
+                setPhotoUrl(userData.users[0]?.photoURL || '');
+            } catch (error) {
+                console.error('Error fetching user data:', error.message);
+            }
+        };
+
+        fetchUserProfile();
+    }, []); // Empty dependency array ensures this runs only once on mount
 
     const handleUpdate = async () => {
         try {
-            if (!currentUser || !currentUser.idToken) {
+            const token = localStorage.getItem('firebaseAuthToken');
+
+            if (!token || !currentUser) {
                 console.error('No user logged in or invalid token.');
                 return;
             }
-
-            const { idToken } = currentUser;
 
             const updateProfileUrl = `https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyDiAUHJpFYnvmGAFZidGl8jkts7fj57xiI`;
 
@@ -28,7 +62,7 @@ const ProfileCompletion = () => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    idToken,
+                    idToken: token,
                     displayName: fullName,
                     photoUrl,
                     returnSecureToken: true,
@@ -41,6 +75,8 @@ const ProfileCompletion = () => {
                 return;
             }
 
+            // Update state and notify user
+            setCurrentUser({ ...currentUser, displayName: fullName, photoURL: photoUrl });
             console.log('User profile updated successfully.');
         } catch (error) {
             console.error('Error updating profile:', error.message);
@@ -52,7 +88,9 @@ const ProfileCompletion = () => {
         console.log('Cancel clicked');
     };
 
-    if (!currentUser) 
+    if (!currentUser) {
+        return <div>Loading...</div>; // Handle initial loading state if needed
+    }
 
     return (
         <div className="profile-completion-container">
