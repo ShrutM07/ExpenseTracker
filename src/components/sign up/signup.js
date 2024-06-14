@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import './signup.css';
 
 const Signup = () => {
@@ -7,6 +8,7 @@ const Signup = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const history = useHistory();
 
     const isFormValid = email && password && confirmPassword && (password === confirmPassword);
 
@@ -31,7 +33,8 @@ const Signup = () => {
                 if (data.error) {
                     setError(data.error.message);
                 } else {
-                    setSuccess('User successfully created. You can now log in.');
+                    setSuccess('User successfully created. You can now log in.')
+                    history.push('/login'); // Redirect to login page after successful signup
                 }
             } catch (err) {
                 setError(err.message);
@@ -73,6 +76,9 @@ const Signup = () => {
                     />
                 </div>
                 <button type="submit" disabled={!isFormValid}>Submit</button>
+                <div className="login-link">
+                    Already have an account? <button type="button" onClick={() => history.push('/login')}>Login</button>
+                </div>
             </form>
         </div>
     );
