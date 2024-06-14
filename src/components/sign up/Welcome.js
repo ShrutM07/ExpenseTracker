@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 const Welcome = () => {
     const history = useHistory();
-    const [isEmailVerified, setIsEmailVerified] = useState(false);
     const [verificationEmailSent, setVerificationEmailSent] = useState(false);
 
     const handleCompleteProfile = () => {
@@ -42,11 +41,19 @@ const Welcome = () => {
         }
     };
 
+    const handleLogout = () => {
+        localStorage.removeItem('firebaseAuthToken');
+        history.push('/');
+    };
+
     return (
         <div className="welcome-container">
+            <div className="header">
+                <button className="logout-button" onClick={handleLogout}>Logout</button>
+            </div>
             <h2>Welcome to Expense Tracker</h2>
             <p>Your profile is incomplete. <a href="#" onClick={handleCompleteProfile}>Complete now.</a></p>
-            <button onClick={handleVerifyEmail} disabled={isEmailVerified || verificationEmailSent}>
+            <button onClick={handleVerifyEmail} disabled={verificationEmailSent}>
                 {verificationEmailSent ? 'Verification Email Sent' : 'Verify Email'}
             </button>
             {verificationEmailSent && (
