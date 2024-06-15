@@ -40,8 +40,7 @@ const Login = () => {
     };
 
     const handleForgotPassword = () => {
-        // Handle forgot password logic
-        console.log('Forgot password clicked.');
+        history.push('/forgot-password');
     };
 
     return (

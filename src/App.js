@@ -5,6 +5,7 @@ import Signup from './components/sign up/Signup';
 import Login from './components/sign up/Login';
 import Welcome from './components/sign up/Welcome';
 import ProfileCompletion from './components/sign up/ProfileCompletion';
+import ForgotPassword from './components/sign up/ForgotPassword';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
             <Route path="/login" component={Login} />
             <Route path="/welcome" component={Welcome} /> 
             <Route path="/complete-profile" component={ProfileCompletion} />
+            <Route path="/forgot-password" component={ForgotPassword} />
             <Route path="/" component={Signup} /> 
         </Switch>
     </Router>
