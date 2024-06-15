@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import ExpenseTracker from '../ExpenseTracker/ExpenseTracker';
+import './Welcome.css';
 
 const Welcome = () => {
     const history = useHistory();
@@ -59,6 +61,7 @@ const Welcome = () => {
             {verificationEmailSent && (
                 <p>Check your email, you might have received a verification link. Click on it to verify.</p>
             )}
+            <ExpenseTracker/>
         </div>
     );
 };
