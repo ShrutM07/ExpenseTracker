@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import './ExpenseTracker.css';
 import { addExpense, deleteExpense, updateExpense, setExpenses } from '../sign up/expenseActions';
 import { activatePremium } from '../sign up/premimumActions';
+import { toggleTheme } from '../sign up/themeAction';
+import './ExpenseTracker.css';
 
 const ExpenseTracker = () => {
     const [amount, setAmount] = useState('');
@@ -10,8 +11,11 @@ const ExpenseTracker = () => {
     const [category, setCategory] = useState('');
     const [editMode, setEditMode] = useState(false);
     const [editExpenseId, setEditExpenseId] = useState(null);
-    const { expenses: reduxExpenses } = useSelector(state => state.expenses);
+
+    const { expenses } = useSelector(state => state.expenses);
     const { isPremiumActivated } = useSelector(state => state.premium);
+    const { darkMode } = useSelector(state => state.theme);
+
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -19,7 +23,7 @@ const ExpenseTracker = () => {
     }, []);
 
     const fetchExpenses = async () => {
-        const databaseURL = 'YOUR_FIREBASE_DATABASE_URL';
+        const databaseURL = 'https://expenseuser-acd49-default-rtdb.firebaseio.com/';
         const idToken = localStorage.getItem('firebaseAuthToken');
 
         try {
@@ -37,7 +41,7 @@ const ExpenseTracker = () => {
         }
     };
 
-    const handleAddExpense = (e) => {
+    const handleAddExpense = async (e) => {
         e.preventDefault();
         const newExpense = { amount, description, category };
         dispatch(addExpense(newExpense));
@@ -69,10 +73,23 @@ const ExpenseTracker = () => {
         setCategory('');
     };
 
-    const totalExpenses = reduxExpenses.reduce((total, expense) => total + parseFloat(expense.amount), 0);
+    const handleDownloadCSV = () => {
+        const csvContent = "data:text/csv;charset=utf-8,"
+            + expenses.map(expense => `${expense.amount},${expense.description},${expense.category}`).join("\n");
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "expenses.csv");
+        document.body.appendChild(link); // Required for FF
+        link.click();
+    };
+
+    if (expenses === null) {
+        return <div>Loading...</div>;
+    }
 
     return (
-        <div className="expense-tracker-container">
+        <div className={`expense-tracker-container ${darkMode ? 'dark-mode' : ''}`}>
             <form className="expense-form" onSubmit={editMode ? handleUpdateExpense : handleAddExpense}>
                 <h2>{editMode ? 'Edit Expense' : 'Add Expense'}</h2>
                 <div className="form-group">
@@ -113,7 +130,7 @@ const ExpenseTracker = () => {
             <div className="expenses-list">
                 <h2>Expenses</h2>
                 <ul>
-                    {reduxExpenses.map((expense) => (
+                    {expenses.map((expense) => (
                         <li key={expense.id}>
                             <span>{expense.amount} - {expense.description} - {expense.category}</span>
                             <button onClick={() => handleEditExpense(expense)}>Edit</button>
@@ -122,11 +139,19 @@ const ExpenseTracker = () => {
                     ))}
                 </ul>
             </div>
-            {totalExpenses > 10000 && !isPremiumActivated && (
+            {expenses.reduce((total, expense) => total + parseFloat(expense.amount), 0) > 10000 && !isPremiumActivated && (
                 <div className="premium-button">
                     <button onClick={() => dispatch(activatePremium())}>Activate Premium</button>
                 </div>
             )}
+            <div className="theme-toggle">
+                <button onClick={() => dispatch(toggleTheme())}>
+                    Switch to {darkMode ? 'Light' : 'Dark'} Theme
+                </button>
+            </div>
+            <div className="download-csv">
+                <button onClick={handleDownloadCSV}>Download CSV</button>
+            </div>
         </div>
     );
 };

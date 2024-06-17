@@ -76,3 +76,14 @@ button:hover {
 .expenses-list button:hover {
     background-color: #0056b3;
 }
+.expense-tracker-container {
+    /* Light mode styles */
+    background-color: white;
+    color: black;
+  }
+  
+  .expense-tracker-container.dark-mode {
+    /* Dark mode styles */
+    background-color: #333;
+    color: white;
+  }
