@@ -14,7 +14,6 @@ describe('Signup Component Tests', () => {
     act(() => {
       render(component);
     });
-    
 
     expect(screen.getByText('Signup')).toBeInTheDocument();
   });
