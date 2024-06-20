@@ -33,7 +33,7 @@ const Signup = () => {
                 if (data.error) {
                     setError(data.error.message);
                 } else {
-                    setSuccess('User successfully created. You can now log in.')
+                    setSuccess('User successfully created. You can now log in.');
                     history.push('/login'); // Redirect to login page after successful signup
                 }
             } catch (err) {
@@ -49,8 +49,9 @@ const Signup = () => {
                 {error && <p className="error">{error}</p>}
                 {success && <p className="success">{success}</p>}
                 <div className="form-group">
-                    <label>Email:</label>
+                    <label htmlFor="email">Email:</label>
                     <input 
+                        id="email"
                         type="email" 
                         value={email} 
                         onChange={(e) => setEmail(e.target.value)} 
@@ -58,8 +59,9 @@ const Signup = () => {
                     />
                 </div>
                 <div className="form-group">
-                    <label>Password:</label>
+                    <label htmlFor="password">Password:</label>
                     <input 
+                        id="password"
                         type="password" 
                         value={password} 
                         onChange={(e) => setPassword(e.target.value)} 
@@ -67,8 +69,9 @@ const Signup = () => {
                     />
                 </div>
                 <div className="form-group">
-                    <label>Confirm Password:</label>
+                    <label htmlFor="confirmPassword">Confirm Password:</label>
                     <input 
+                        id="confirmPassword"
                         type="password" 
                         value={confirmPassword} 
                         onChange={(e) => setConfirmPassword(e.target.value)} 

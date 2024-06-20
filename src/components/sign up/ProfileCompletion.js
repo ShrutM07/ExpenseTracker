@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 
 const ProfileCompletion = () => {
     const [fullName, setFullName] = useState('');
     const [photoUrl, setPhotoUrl] = useState('');
     const [currentUser, setCurrentUser] = useState(null); 
+    const history = useHistory();
 
     useEffect(() => {
-        
         const fetchUserProfile = async () => {
             try {
                 const token = localStorage.getItem('firebaseAuthToken');
@@ -84,8 +85,8 @@ const ProfileCompletion = () => {
     };
 
     const handleCancel = () => {
-        // Handle cancel action (e.g., navigate back or close modal)
-        console.log('Cancel clicked');
+        // Navigate back to the welcome page
+        history.push('/welcome');
     };
 
     if (!currentUser) {
